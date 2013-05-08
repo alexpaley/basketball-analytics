@@ -18,7 +18,7 @@ var teams     = ['BAL','ATL','BUF','CAP','CHA','CHH','CHI','CIN','CLE','DAL',
                  'ORL','PHI','PHO','POR','SAC','SAS','SDC','SDR','SEA','SFW',
                  'TOR','UTA','VAN','WAS','WSB'];
 
-var data  = {};
+var data      = {};
 
 // Simple Error function
 var logger = function(err) {
