@@ -11,6 +11,7 @@ var cheerio  = require('cheerio'),
     cronJob  = require('cron').CronJob,
     mongoose = require('mongoose'),
     request  = require('request');
+    fs       = require('fs');
 
 var teams    = ['BAL','ATL','BUF','CAP','CHA','CHH','CHI','CIN','CLE','DAL',
                 'DEN','DET','GSW','HOU','IND','KCK','KCO','LAC','LAL','MEM',
@@ -20,20 +21,20 @@ var teams    = ['BAL','ATL','BUF','CAP','CHA','CHH','CHI','CIN','CLE','DAL',
 
 // Selectors for all tables on page to be scraped
 var selectorArray = ['.sortable.stats_table#roster',
+                     '.stats_table#team_stats',
                      '.sortable.stats_table#totals',
                      '.sortable.stats_table#per_game',
                      '.sortable.stats_table#advanced',
                      '.sortable.stats_table#playoffs_totals',
-                     '.sortable.stats_table#playoffs_advanced'];
+                     '.sortable.stats_table#playoffs_advanced',
+                     '.stats_table#salaries'];
 
 var data     = {};
-
 
 // Simple Error function
 var logger = function(err) {
   console.error(err);
 };
-
 
 // Add stats for individual teams and players on that team by year
 // E.g. Minutes played by Lebron James (who is on Miami Heat) in 2013
@@ -46,17 +47,26 @@ var getTeamStatsByYear = exports.addTeamStat = function(team, year) {
     if(res.statusCode !== 200) { return logger(res.statusCode); }
 
     var $    = cheerio.load(body),
-        srcs = {};
+        srcs = [];
+    var newLineRegex = /(\n\n)/gm,
+        replaceRegex = /(\r\n|\n|\r)+/gm,
+        singleSpace  = /\s+/g;
 
     selectorArray.map(function(selector) {
       $(selector).each(function(i, html) {
-        var rows = $(html).find('tr').text();
-        console.log(rows);
+        var rows = $(html).find('tr').text().split(newLineRegex).map(function(row) {
+          return row.replace(replaceRegex,'').replace(singleSpace,' ').trim();
+        }).filter(function(row) {
+          return row;
+        });
+        srcs = rows;
       });
+      console.log(srcs);
+      return srcs;
     });
+    // console.log(srcs);
   });
 };
-
 
 // Uses addTeamStatsByYear helper function to loop through and gather stats
 // for all teams and years from 1970 - Present.
@@ -72,5 +82,5 @@ var getAllTeamStatsForAllYears = function() {
   });
 };
 
-getTeamStatsByYear('MIA', 2013);
+getTeamStatsByYear('MIA', 2012);
 // getAllTeamStatsForAllYears();
