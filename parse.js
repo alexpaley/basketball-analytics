@@ -29,8 +29,6 @@ var selectorArray = ['.sortable.stats_table#roster',
                      '.sortable.stats_table#playoffs_advanced',
                      '.stats_table#salaries'];
 
-var data     = {};
-
 // Simple Error function
 var logger = function(err) {
   console.error(err);
@@ -47,29 +45,44 @@ var getTeamStatsByYear = exports.addTeamStat = function(team, year) {
     if(res.statusCode !== 200) { return logger(res.statusCode); }
 
     var $    = cheerio.load(body),
-        srcs = [];
+        srcs = {};
     var newLineRegex = /(\n\n)/gm,
         singleSpace  = /\s+/g;
 
-    selectorArray.map(function(selector) {
-      $(selector).each(function(i, html) {
-        var rows = $(html).find('tr').text().split(newLineRegex).map(function(row) {
-          return row.replace(singleSpace,' ').trim();
-        }).filter(function(row) {
-          return row;
-        });
-        srcs.push(rows);
+    selectorArray.map(function(selector, i) {
+      srcs[selector] = [];
+      srcs[selector].push($(selector).find('th').map(function() {
+        return $(this).text();
+      }));
+
+      $(selector).find('tbody tr').each(function () {
+        srcs[selector].push($(this).find('td').map(function () {
+          return $(this).text();
+        }));
       });
     });
 
-    for(var i=0;i<srcs.length;i++) {
-      srcs[i] = srcs[i].map(function(row) {
-        return row.split(' ');
-      });
-    }
+    console.log(srcs);
+
+    // selectorArray.map(function(selector) {
+    //   $(selector).each(function(i, html) {
+    //     var rows = $(html).find('tr').text().split(newLineRegex).map(function(row) {
+    //       return row.replace(singleSpace,' ').trim();
+    //     }).filter(function(row) {
+    //       return row;
+    //     });
+    //     srcs.push(rows);
+    //   });
+    // });
+
+    // for(var i=0;i<srcs.length;i++) {
+    //   srcs[i] = srcs[i].map(function(row) {
+    //     return row.split(' ');
+    //   });
+    // }
     //TODO - Need to change to loop through TD instead of TR
     //Store TD Headers as keys of object
-    console.log(srcs);
+    // console.log(srcs);
     return srcs;
   });
 };
