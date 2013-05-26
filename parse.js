@@ -64,25 +64,6 @@ var getTeamStatsByYear = exports.addTeamStat = function(team, year) {
 
     console.log(srcs);
 
-    // selectorArray.map(function(selector) {
-    //   $(selector).each(function(i, html) {
-    //     var rows = $(html).find('tr').text().split(newLineRegex).map(function(row) {
-    //       return row.replace(singleSpace,' ').trim();
-    //     }).filter(function(row) {
-    //       return row;
-    //     });
-    //     srcs.push(rows);
-    //   });
-    // });
-
-    // for(var i=0;i<srcs.length;i++) {
-    //   srcs[i] = srcs[i].map(function(row) {
-    //     return row.split(' ');
-    //   });
-    // }
-    //TODO - Need to change to loop through TD instead of TR
-    //Store TD Headers as keys of object
-    // console.log(srcs);
     return srcs;
   });
 };
